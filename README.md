@@ -7,3 +7,5 @@ For now, you can only play as black (Will add a choice later on).  At the beginn
 At the end of each game, the program will quit and a FEN will be sent to the command line.
 
 Theres currently not much to the program,except it being able to play chess.
+
+You might have to install stockfish if you are using an OS that isn't Ubuntu.
