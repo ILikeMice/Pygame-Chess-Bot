@@ -1,6 +1,6 @@
 # Pygame Chess Bot
 
-As the name suggests, this is a chess bot written using pygame.
+As the name suggests, this is a chess bot written using pygame. It uses Stockfish and a python library for it.
 
 For now, you can only play as black (Will add a choice later on).  At the beginning of the python file, you can choose to set the computers rating, although this isn't recommended. During the game, there will be a red square on the fields you click to indicate your selection.
 
