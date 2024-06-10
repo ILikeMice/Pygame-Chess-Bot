@@ -65,15 +65,13 @@ pygame.display.set_caption("Chess | Elo: " + str(eloinput))
 def PlayFirstMove():
     bestmove = stockfish.get_best_move()
     stockfish.make_moves_from_current_position([bestmove])
-    #print(stockfish.get_board_visual())
     bestmove = list(bestmove)
-    #print("best move", bestmove)
+    
 
     bestmove[0] = ord(bestmove[0]) - 97
     bestmove[1] = int(bestmove[1]) - 1
     bestmove[2] = ord(bestmove[2]) - 97
     bestmove[3] = int(bestmove[3]) - 1
-    #print("in numbers:", bestmove)
     board[bestmove[3]][bestmove[2]] = board[bestmove[1]][bestmove[0]]
     board[bestmove[1]][bestmove[0]] = "--"
 
@@ -90,21 +88,15 @@ while running:
             col = mouse_x // square_size
             row = mouse_y // square_size
             
-            #print(chr(col + 97) + str(row + 1))
             selectedmove = str(col) + str(row)
-            #print(moving)
             if moving:
                 if board[start_row][start_col] != "--" and (row,col) != (start_row,start_col):
                     move = chr(start_col + 97) + str(start_row + 1) + chr(col + 97) + str(row + 1)
-                    #print("moving", start_row, start_col, ":", row, col)
                     if stockfish.is_move_correct(move):
                         board[row][col] = board[start_row][start_col]
                         board[start_row][start_col] = "--"
                         
-                        #print(move)
-                        #print(start_row,start_col,row,col)
                     
-                        #print("correct move, best move:", stockfish.get_best_move())
 
                         stockfish.make_moves_from_current_position([move])
                         
@@ -113,15 +105,12 @@ while running:
                             print("You Won! FEN:", stockfish.get_fen_position())
                             running = False
                         stockfish.make_moves_from_current_position([bestmove])
-                        #print(stockfish.get_board_visual())
                         bestmove = list(bestmove)
-                        #print("best move", bestmove)
                         
                         bestmove[0] = ord(bestmove[0]) - 97
                         bestmove[1] = int(bestmove[1]) - 1
                         bestmove[2] = ord(bestmove[2]) - 97
                         bestmove[3] = int(bestmove[3]) - 1
-                        #print("in numbers:", bestmove)
                         board[bestmove[3]][bestmove[2]] = board[bestmove[1]][bestmove[0]]
                         board[bestmove[1]][bestmove[0]] = "--"
                         
@@ -131,13 +120,11 @@ while running:
 
                     moving = False
                 else:
-                    #print("beep", start_row, start_col, ":", row, col)
                     moving = False
             elif not moving:
                 
                 start_row = row
                 start_col = col
-                #print("not moving", start_row, start_col)
                 moving = True
 
     screen.fill(white)
