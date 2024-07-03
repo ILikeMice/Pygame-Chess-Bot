@@ -17,18 +17,52 @@ moving = False
 
 
 square_size = 600//8
-bb,bk,bn,bp,bq,br,wb,wk,wn,wp,wq,wr = [pygame.transform.scale(pygame.image.load(f"images/{piece}.png"), (square_size, square_size)) for piece in ["bb","bk","bn","bp","bq","br","wb","wk","wn","wp","wq","wr"]]
+b,k,n,p,q,r,B,K,N,P,Q,R = [pygame.transform.scale(pygame.image.load(f"images/{piece}.png"), (square_size, square_size)) for piece in ["b","k","n","p","q","r","B","K","N","P","Q","R"]]
+
 
 board = [
-    ["wr", "wn", "wb", "wq", "wk", "wb", "wn", "wr"],
-    ["wp", "wp", "wp", "wp", "wp", "wp", "wp", "wp"],
     ["--", "--", "--", "--", "--", "--", "--", "--"],
     ["--", "--", "--", "--", "--", "--", "--", "--"],
     ["--", "--", "--", "--", "--", "--", "--", "--"],
     ["--", "--", "--", "--", "--", "--", "--", "--"],
-    ["bp", "bp", "bp", "bp", "bp", "bp", "bp", "bp"],
-    ["br", "bn", "bb", "bq", "bk", "bb", "bn", "br"]
+    ["--", "--", "--", "--", "--", "--", "--", "--"],
+    ["--", "--", "--", "--", "--", "--", "--", "--"],
+    ["--", "--", "--", "--", "--", "--", "--", "--"],
+    ["--", "--", "--", "--", "--", "--", "--", "--"]
 ]
+
+emptyboard = [
+    ["--", "--", "--", "--", "--", "--", "--", "--"],
+    ["--", "--", "--", "--", "--", "--", "--", "--"],
+    ["--", "--", "--", "--", "--", "--", "--", "--"],
+    ["--", "--", "--", "--", "--", "--", "--", "--"],
+    ["--", "--", "--", "--", "--", "--", "--", "--"],
+    ["--", "--", "--", "--", "--", "--", "--", "--"],
+    ["--", "--", "--", "--", "--", "--", "--", "--"],
+    ["--", "--", "--", "--", "--", "--", "--", "--"]
+]
+
+def fromFEN(FEN):
+    print(FEN)
+    FEN = list(FEN)
+    currentpos = 0
+    currentrow = 0
+    for i in range(8):
+        for b in range(8):
+            board[i][b] = "--"
+    for i in FEN:
+        if i.isnumeric():
+            currentpos += int(i)
+            continue
+        elif i != "/" and i != " ":
+            board[currentrow][currentpos] = i
+        currentpos += 1
+        if i == "/":
+            currentrow += 1
+            currentpos = 0
+        if i == " ":
+            break
+    print(stockfish.get_board_visual())
 
 def draw_board():
     for row in range(8):
@@ -65,17 +99,13 @@ pygame.display.set_caption("Chess | Elo: " + str(eloinput))
 def PlayFirstMove():
     bestmove = stockfish.get_best_move()
     stockfish.make_moves_from_current_position([bestmove])
-    bestmove = list(bestmove)
-    
+    fromFEN(stockfish.get_fen_position())
 
-    bestmove[0] = ord(bestmove[0]) - 97
-    bestmove[1] = int(bestmove[1]) - 1
-    bestmove[2] = ord(bestmove[2]) - 97
-    bestmove[3] = int(bestmove[3]) - 1
-    board[bestmove[3]][bestmove[2]] = board[bestmove[1]][bestmove[0]]
-    board[bestmove[1]][bestmove[0]] = "--"
+for i in range(10):
+    PlayFirstMove()
 
-PlayFirstMove()
+print(stockfish.get_board_visual())
+print(str(board).replace("],", "]\n"))
 
 while running:
 
@@ -88,32 +118,35 @@ while running:
             col = mouse_x // square_size
             row = mouse_y // square_size
             
+            nums = [0,8,7,6,5,4,3,2,1]
+
             selectedmove = str(col) + str(row)
+            print(stockfish.get_board_visual())
+            print(str(board).replace("],", "]\n"))
+            
             if moving:
+                print(start_row,start_col, ":", row,col)
                 if board[start_row][start_col] != "--" and (row,col) != (start_row,start_col):
-                    move = chr(start_col + 97) + str(start_row + 1) + chr(col + 97) + str(row + 1)
+                    move = chr(start_col + 97) + str(nums[start_row]-1) + chr(col + 97) + str(nums[row] -1)
+                    print(move)
                     if stockfish.is_move_correct(move):
-                        board[row][col] = board[start_row][start_col]
-                        board[start_row][start_col] = "--"
+                        print("a")
                         
                     
-
                         stockfish.make_moves_from_current_position([move])
-                        
+                        fromFEN(stockfish.get_fen_position())
+
                         bestmove = stockfish.get_best_move()
                         if bestmove == None:
                             print("You Won! FEN:", stockfish.get_fen_position())
                             running = False
                         stockfish.make_moves_from_current_position([bestmove])
-                        bestmove = list(bestmove)
                         
-                        bestmove[0] = ord(bestmove[0]) - 97
-                        bestmove[1] = int(bestmove[1]) - 1
-                        bestmove[2] = ord(bestmove[2]) - 97
-                        bestmove[3] = int(bestmove[3]) - 1
-                        board[bestmove[3]][bestmove[2]] = board[bestmove[1]][bestmove[0]]
-                        board[bestmove[1]][bestmove[0]] = "--"
                         
+                        fromFEN(stockfish.get_fen_position())
+                        
+                        
+
                         if stockfish.get_best_move() == None:
                             print("You lost! FEN:", stockfish.get_fen_position())
                             running = False
@@ -130,11 +163,12 @@ while running:
     screen.fill(white)
 
 
-
-
+    
+    fromFEN(stockfish.get_fen_position())
     draw_board()
 
     if len(selectedmove) <= 2 and selectedmove != "--":
+        
         var = list(selectedmove)
         column, roww = int(var[0]), int(var[1])
         if moving:
