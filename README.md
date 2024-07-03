@@ -8,4 +8,4 @@ At the end of each game, the program will quit and a FEN will be sent to the com
 
 Theres currently not much to the program,except it being able to play chess.
 
-You might have to install stockfish if you are using an OS that isn't Ubuntu.
+You need to install stockfish from the official website to run this.
